@@ -5,6 +5,8 @@ from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 
+from allauth.account.adapter import get_adapter
+
 from .app_settings import app_settings
 from .utils import import_attribute
 
@@ -109,13 +111,4 @@ class BaseInvitationsAdapter(object):
 
 
 def get_invitations_adapter():
-    # Compatibility with legacy allauth only version.
-    LEGACY_ALLAUTH = hasattr(settings, 'ACCOUNT_ADAPTER') and \
-        settings.ACCOUNT_ADAPTER == 'invitations.models.InvitationsAdapter'
-    if LEGACY_ALLAUTH:
-        # defer to allauth
-        from allauth.account.adapter import get_adapter
-        return get_adapter()
-    else:
-        # load an adapter from elsewhere
-        return import_attribute(app_settings.ADAPTER)()
+    return get_adapter()
